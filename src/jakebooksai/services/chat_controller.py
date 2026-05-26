@@ -25,10 +25,16 @@ class ChatController:
     @staticmethod
     def _compose_prompt(user_message: str, context_snippets: list[str]) -> str:
         """Build a single prompt from user text and retrieval context."""
-        context_block = "\n".join(f"- {snippet}" for snippet in context_snippets)
+        context_block = (
+            "\n".join(f"- {snippet}" for snippet in context_snippets)
+            if context_snippets
+            else "- Nenhuma recomendação recuperada do banco de dados no momento."
+        )
         return (
             "Você é o assistente da JakeBooks. Responda em português do Brasil, "
-            "com objetividade e foco no contexto da empresa.\n\n"
-            f"Contexto de recuperação (RAG):\n{context_block}\n\n"
+            "com objetividade e foco em catálogo, estoque, histórico de compras e recomendações. "
+            "Use apenas os fatos recuperados e não invente títulos ou quantidades. "
+            "Se o usuário perguntar se ele pessoalmente comprou um livro, deixe claro quando o sistema só tiver histórico geral do catálogo.\n\n"
+            f"Contexto recuperado do banco:\n{context_block}\n\n"
             f"Pergunta do usuário: {user_message}"
         )

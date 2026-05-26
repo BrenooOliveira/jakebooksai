@@ -8,7 +8,7 @@ from ..config.settings import AppSettings
 from .chat_controller import ChatController
 from .contracts import ChatGateway
 from .gemini_gateway import GeminiChatGateway
-from .rag_stub import InMemoryRagGateway
+from .postgres_rag_gateway import PostgresRagGateway
 
 
 class OfflineChatGateway(ChatGateway):
@@ -33,7 +33,13 @@ class ChatRuntime:
 
 def build_chat_runtime(settings: AppSettings) -> ChatRuntime:
     """Build the chat runtime components according to current settings."""
-    rag_gateway = InMemoryRagGateway()
+    rag_gateway = PostgresRagGateway(
+        host=settings.db_host,
+        port=settings.db_port,
+        dbname=settings.db_name,
+        user=settings.db_user,
+        password=settings.db_password,
+    )
 
     if settings.gemini_api_key:
         chat_gateway: ChatGateway = GeminiChatGateway(
